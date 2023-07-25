@@ -15,8 +15,8 @@ let animationStarted = false;
 
 // Development mode flag and data sources
 const develop = false;
-const dataSrc = develop ? "data.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/data.json";
-const audioSrc = develop ? "track.opus" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/track.opus";
+const framesSrc = develop ? "data/frames.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/data/frames.json";
+const audioSrc = develop ? "data/track.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/data/track.json";
 
 /**
  * Fetches the animation data from the specified data source (local or remote).
@@ -25,14 +25,32 @@ const audioSrc = develop ? "track.opus" : "https://raw.githubusercontent.com/Gui
 async function fetchAnimationData() {
     try {
         if (!fetchAnimationData.cachedData) {
-            const response = await fetch(dataSrc);
+            const response = await fetch(framesSrc);
             fetchAnimationData.cachedData = await response.json();
         }
         return fetchAnimationData.cachedData;
     } catch (error) {
-        console.error("Error reading data.json:", error);
+        console.error("Error reading frames.json:", error);
     }
 }
+
+
+/**
+ * Fetches the audio data from the specified data source (local or remote).
+ * @returns {Promise} A Promise that resolves to the audio data.
+ */
+async function fetchAudioData() {
+    try {
+        if (!fetchAudioData.cachedData) {
+            const response = await fetch(audioSrc);
+            fetchAudioData.cachedData = await response.json();
+        }
+        return fetchAudioData.cachedData;
+    } catch (error) {
+        console.error("Error reading track.json:", error);
+    }
+}
+
 
 /**
  * Converts the polygon data into an SVG path string.
@@ -58,9 +76,6 @@ function updateFrame(frame) {
  */
 function onAnimationFinish() {
     clearInterval(animationIntervalId);
-    const audio = new Audio("track.opus");
-    audio.pause();
-    audio.currentTime = 0;
     svg.parentNode.replaceChild(originalSvgData.cloneNode(true), svg);
     console.log("Animation finished!");
     animationStarted = false;
@@ -121,7 +136,7 @@ function startAnimation() {
         fetchAnimationData().then(data => {
             animationIntervalId = setInterval(() => playFrames(data), frameDelay);
             animationStarted = true;
-        }).catch((error) => console.error("Error reading data.json:", error));
+        }).catch((error) => console.error("Error reading frames.json:", error));
     }
 }
 
@@ -131,9 +146,11 @@ function startAnimation() {
 function startAudio() {
     if (!audioStarted) {
         audioStarted = true;
-        const audio = new Audio(audioSrc);
-        audio.play().catch((e) => console.error("Audio error:", e)).then(() => console.log("Audio finished"));
-        console.log("Audio started");
+        fetchAudioData().then(data => {
+            const audio = new Audio(`data:audio/ogg;base64,${data.track}`);
+            audio.play().catch((e) => console.error("Audio error:", e)).then(() => console.log("Audio finished"));
+            console.log("Audio started");
+        }).catch((error) => console.error("Error reading track.json:", error));
     }
 }
 
