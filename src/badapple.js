@@ -95,8 +95,6 @@ function initializeAnimation() {
         console.log("Cloned original SVG data.");
     }
 
-    existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
-
     document.addEventListener("keypress", handleKeyPress);
     document.addEventListener("click", handleKeyPress);
 
@@ -119,6 +117,7 @@ function handleKeyPress(event) {
  */
 function startAnimation() {
     if (!animationStarted) {
+        existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
         fetchAnimationData().then(data => {
             animationIntervalId = setInterval(() => playFrames(data), frameDelay);
             animationStarted = true;
