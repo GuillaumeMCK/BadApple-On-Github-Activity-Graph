@@ -14,7 +14,7 @@ let audioStarted = false;
 let animationStarted = false;
 
 // Development mode flag and data sources
-const develop = true;
+const develop = false;
 const dataSrc = develop ? "data.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/data.json";
 const audioSrc = develop ? "track.opus" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/track.opus";
 
