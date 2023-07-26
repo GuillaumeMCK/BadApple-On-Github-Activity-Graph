@@ -13,7 +13,7 @@ let animationIntervalId;
 let animationStarted = false;
 
 // Development mode flag and data sources
-const develop = true;
+const develop = false;
 const framesSrc = develop ? "data/frames.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json";
 const audioSrc = develop ? "data/track.ogg" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg";
 
