@@ -68,6 +68,7 @@ function updateFrame(frame) {
     const transform = svg.querySelector("g").getCTM().inverse();
     svgPath.setAttribute("d", getPathFromPolygons(frame.polygons));
     svgPath.setAttribute("transform", `translate(${transform.e}, ${transform.f})`);
+    svgPath.setAttribute("stroke-width", "1");
 }
 
 /**
