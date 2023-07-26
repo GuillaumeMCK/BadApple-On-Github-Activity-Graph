@@ -101,7 +101,7 @@ def test_process_video():
     video_url = './badapple.webm'
     frames = process_video(video_url)
     print("Video processing complete. Saving to JSON file...")
-    save_frames_to_json(frames, './data/frames.json')
+    save_frames_to_json(frames, '../data/frames.json')
     print("Saved to JSON file.")
 
 

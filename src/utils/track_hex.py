@@ -2,7 +2,7 @@
 import json
 
 file_path = "./track.ogg"
-output = 'data/track.json'
+output = '../data/track.json'
 
 
 def ogg_to_json(input_file_path, output_file_path):
