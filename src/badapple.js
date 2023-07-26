@@ -147,9 +147,19 @@ function startAudio() {
     if (!audioStarted) {
         audioStarted = true;
         fetchAudioData().then(data => {
-            const audio = new Audio(`data:audio/ogg;base64,${data.track}`);
-            audio.play().catch((e) => console.error("Audio error:", e)).then(() => console.log("Audio finished"));
-            console.log("Audio started");
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const buffer = new Uint8Array(data.hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
+            audioCtx.decodeAudioData(buffer.buffer, function (decodedData) {
+                const source = audioCtx.createBufferSource();
+                source.buffer = decodedData;
+
+                const gainNode = audioCtx.createGain();
+                gainNode.gain.value = 0.5;
+                source.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+
+                source.start();
+            }).then(r => console.log("Audio started!")).catch(e => console.error("Error starting audio:", e));
         }).catch((error) => console.error("Error reading track.json:", error));
     }
 }
