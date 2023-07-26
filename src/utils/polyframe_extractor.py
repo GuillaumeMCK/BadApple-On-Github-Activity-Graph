@@ -87,7 +87,7 @@ def save_frames_to_json(frames: list[PolygonFrame], output_file: str):
 
 # Testing the process_frame function with a sample image
 def test_process_frame():
-    sample_image_url = './sample_image.png'
+    sample_image_url = './assets/sample_image.png'
     sample_image = cv2.imread(sample_image_url)
     frame = process_frame(sample_image, 0, 282, 246)
     print("Polygons for the sample image:")
@@ -98,7 +98,7 @@ def test_process_frame():
 
 # Testing the process_video function with a sample video
 def test_process_video():
-    video_url = './badapple.webm'
+    video_url = './assets/badapple.webm'
     frames = process_video(video_url)
     print("Video processing complete. Saving to JSON file...")
     save_frames_to_json(frames, '../data/frames.json')
