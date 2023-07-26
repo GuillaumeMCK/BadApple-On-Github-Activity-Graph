@@ -18,10 +18,10 @@
    from [here](https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/badapple.min.js).
 
 ```js
-const svg=document.querySelector(".js-activity-overview-graph");const svgPath=svg.querySelector("path");const existingEllipses=svg.querySelectorAll("ellipse");const frameDelay=1000/30;let originalSvgData;let frameIndex=0;let animationIntervalId;let animationStarted=false;const develop=false;const framesSrc=develop?"data/frames.json":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json";const audioSrc=develop?"data/track.ogg":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg";async function fetchAnimationData(){try{if(!fetchAnimationData.cachedData){const response=await fetch(framesSrc);fetchAnimationData.cachedData=await response.json();};return fetchAnimationData.cachedData;}catch(error){console.error("Error reading frames.json:",error);}};async function fetchAudioData(){try{if(!fetchAudioData.cachedData){const response=await fetch(audioSrc);fetchAudioData.cachedData=await response.arrayBuffer();};return fetchAudioData.cachedData;}catch(error){console.error("Error reading track.ogg:",error);}};function getPathFromPolygons(polygons){return polygons.map(polygon=>`M${polygon.join(" L")}Z`).join(" ");};function updateFrame(frame){svgPath.setAttribute("d",getPathFromPolygons(frame.polygons));};function onAnimationFinish(){clearInterval(animationIntervalId);svg.parentNode.replaceChild(originalSvgData.cloneNode(true),svg);console.log("Animation finished!");animationStarted=false;};function playFrames(data){updateFrame(data[frameIndex]);frameIndex=(frameIndex+1)%data.length;if(frameIndex===0){onAnimationFinish();}};function initializeAnimation(){console.log('%c Bad Apple!! 🍎','background: #222; color: white; font-size: 24px; padding: 10px; border-radius: 5px;');if(!originalSvgData){originalSvgData=svg.cloneNode(true);};runAnimation();};async function runAnimation(){const audio=await loadAudio();const animation=await loadAnimation();audio.start();await animation();};async function loadAnimation(){const data=await fetchAnimationData();async function startAnimation(){if(!animationStarted){const transform=svg.querySelector("g").getCTM().inverse();svgPath.setAttribute("transform",`translate(${transform.e},${transform.f})`);svgPath.setAttribute("stroke-width",".5");existingEllipses.forEach(ellipse=>(ellipse.style.display="none"));animationStarted=true;animationIntervalId=setInterval(()=>playFrames(data),frameDelay);}};return startAnimation;};async function loadAudio(gainValue=0.25){try{const audioCtx=new(window.AudioContext||window.webkitAudioContext)();const audioData=await fetchAudioData();const decodedData=await audioCtx.decodeAudioData(audioData);const source=audioCtx.createBufferSource();source.buffer=decodedData;const gainNode=audioCtx.createGain();gainNode.gain.value=gainValue;source.connect(gainNode);gainNode.connect(audioCtx.destination);return source;}catch(error){console.error("Error loading audio:",error);throw error;}};initializeAnimation();
+var a=document.querySelector(".js-activity-overview-graph"),b=a.querySelector("path"),c=a.querySelectorAll("ellipse"),d=1000/30,e,f=0,g,h=!1,i=!1,j=i?"data/frames.json":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json",k=i?"data/track.ogg":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg";async function l(){try {if(!l.cachedData){var A=await fetch(j);l.cachedData=await A.json()}return l.cachedData} catch (_) {console.error("Error reading frames.json:",_)}}async function m(){try {if(!m.cachedData){var A=await fetch(k);m.cachedData=await A.arrayBuffer()}return m.cachedData} catch (_) {console.error("Error reading track.ogg:",_)}}function n(A){return A.map(polygon=>`M${polygon.join(" L")} Z`).join(" ")}function o(A){b.setAttribute("d",n(A.polygons))}function p(){clearInterval(g);a.parentNode.replaceChild(e.cloneNode(!0),a);console.log("Animation finished!");h=!1}function q(A){o(A[f]);f=(f+1)%A.length;!f&&p()}function r(){console.log('%c Bad Apple!! 🍎','background: #222; color: white; font-size: 24px; padding: 10px; border-radius: 5px;');!e&&(e=a.cloneNode(!0));s()}async function s(){var A=await u();A.start();await await t()()}async function t(){var A=await l();async function _(){if(!h){var B=a.querySelector("g").getCTM().inverse();b.setAttribute("transform",`translate(${B.e}, ${B.f})`);b.setAttribute("stroke-width",".5");for(const C of c)(C.style.display="none");h=!0;g=setInterval(()=>q(A),d)}}return _}async function u(A=0.25){try {var _=new (window.AudioContext||window.webkitAudioContext)(),B=await m(),C=await _.decodeAudioData(B),D=_.createBufferSource(),E=_.createGain();D.buffer=C;E.gain.value=A;D.connect(E);E.connect(_.destination);return D} catch (_a) {console.error("Error loading audio:",_a);throw _a}}r();
 ```
 
-`SHA-256: 8a62817e70eb4dd3f8391233c5da7e586ef87d7e9a0d22ab01221c1bffc81dc5`
+`SHA-256: 4c4cab089736071db7ebe78844e787f338634b45ff248276cdf00af2a3e276a5`
 
 2. Go to your GitHub profile page and open the developer console (Ctrl+Shift+I or F12).
 3. Paste the code into the console and press Enter.
@@ -80,13 +80,11 @@ function getPathFromPolygons(polygons) {
 
 ## Minified Code
 
-**Requirements**
-
-- [jsmin](https://pypi.org/project/jsmin/)
+Code minified using [minify](https://www.npmjs.com/package/minify).
 
 ```bash
-cd ./src/utils
-python3 minify.py
+cd ./src
+minify badapple.js > badapple.min.js 
 ```
 
 ## Credits
