@@ -10,7 +10,6 @@ const frameDelay = 1000 / 30;
 let originalSvgData;
 let frameIndex = 0;
 let animationIntervalId;
-let audioStarted = false;
 let animationStarted = false;
 
 // Development mode flag and data sources
@@ -92,60 +91,59 @@ function onAnimationFinish() {
 function playFrames(data) {
     updateFrame(data[frameIndex]);
     frameIndex = (frameIndex + 1) % data.length;
-
     if (frameIndex === 0) {
         onAnimationFinish();
     }
-    console.log(`Playing frame ${frameIndex}`);
 }
 
 /**
  * Initializes the animation by cloning the original SVG and preparing the event listeners.
  */
 function initializeAnimation() {
-    console.log('%c Bad Apple!! 🍎', 'background: #222; color: #bada55; font-size: 24px; padding: 10px; border-radius: 5px;');
+    console.log('%c Bad Apple!! 🍎', 'background: #222; color: white; font-size: 24px; padding: 10px; border-radius: 5px;');
 
     if (!originalSvgData) {
         originalSvgData = svg.cloneNode(true);
-        console.log("Cloned original SVG data.");
     }
 
-    document.addEventListener("keypress", handleKeyPress);
-    document.addEventListener("click", handleKeyPress);
-
-    console.log("Ready to start animation!\n Press any key or click to start. 🚀");
+    runAnimation();
 }
 
 /**
- * Handles the keypress event or click event to start the audio and animation.
- * @param {Event} event - The event object.
+ * Runs the animation by initializing it and starting the audio and animation.
  */
-function handleKeyPress(event) {
-    if (event.key || event.type === "click") {
-        startAudio();
-        startAnimation();
-    }
+async function runAnimation() {
+    const audio = await loadAudio();
+    const animation = await loadAnimation();
+    audio.start();
+    await animation();
 }
 
 /**
- * Starts the animation by fetching the animation data and setting up the interval to play frames.
+ * Loads the animation data and returns a function to start the animation.
+ * @returns {Function} A function to start the animation.
  */
-function startAnimation() {
-    if (!animationStarted) {
-        existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
-        fetchAnimationData().then(data => {
-            animationIntervalId = setInterval(() => playFrames(data), frameDelay);
+async function loadAnimation() {
+    const data = await fetchAnimationData()
+
+    async function startAnimation() {
+        if (!animationStarted) {
+            existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
             animationStarted = true;
-        }).catch((error) => console.error("Error reading frames.json:", error));
+            animationIntervalId = setInterval(() => playFrames(data), frameDelay);
+        }
+
     }
+
+    return startAnimation;
 }
 
 /**
- * Starts playing the audio track for the animation.
+ * Loads the audio track for the animation.
+ * @returns {Promise} A Promise that resolves to the audio source object.
  */
-function startAudio() {
-    if (!audioStarted) {
-        audioStarted = true;
+function loadAudio() {
+    return new Promise((resolve, reject) => {
         fetchAudioData().then(data => {
             const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             const buffer = new Uint8Array(data.hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
@@ -154,19 +152,14 @@ function startAudio() {
                 source.buffer = decodedData;
 
                 const gainNode = audioCtx.createGain();
-                gainNode.gain.value = 0.5;
+                gainNode.gain.value = 0.25;
                 source.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
 
-                source.start();
-            }).then(r => console.log("Audio started!")).catch(e => console.error("Error starting audio:", e));
+                resolve(source);
+            }).catch(e => reject(e));
         }).catch((error) => console.error("Error reading track.json:", error));
-    }
+    });
 }
 
-// Start the animation after the DOM finishes loading
-document.addEventListener("DOMContentLoaded", initializeAnimation);
-// Or start the animation immediately if the DOM is already loaded
-if (document.readyState === "interactive" || document.readyState === "complete") {
-    initializeAnimation();
-}
+initializeAnimation();
