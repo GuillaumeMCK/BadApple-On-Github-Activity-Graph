@@ -108,6 +108,8 @@ def test_process_video():
 # Run the testing functions
 if __name__ == "__main__":
     if len(sys.argv) > 1:
+        frame = process_video(sys.argv[1])
+        save_frames_to_json(frame, '../data/frames.json')
         quit(0)
     test_process_frame()
     test_process_video()

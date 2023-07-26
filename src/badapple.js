@@ -13,9 +13,9 @@ let animationIntervalId;
 let animationStarted = false;
 
 // Development mode flag and data sources
-const develop = false;
-const framesSrc = develop ? "data/frames.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/data/frames.json";
-const audioSrc = develop ? "data/track.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple/main/src/data/track.json";
+const develop = true;
+const framesSrc = develop ? "data/frames.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json";
+const audioSrc = develop ? "data/track.ogg" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg";
 
 /**
  * Fetches the animation data from the specified data source (local or remote).
@@ -42,14 +42,13 @@ async function fetchAudioData() {
     try {
         if (!fetchAudioData.cachedData) {
             const response = await fetch(audioSrc);
-            fetchAudioData.cachedData = await response.json();
+            fetchAudioData.cachedData = await response.arrayBuffer();
         }
         return fetchAudioData.cachedData;
     } catch (error) {
-        console.error("Error reading track.json:", error);
+        console.error("Error reading track.ogg:", error);
     }
 }
-
 
 /**
  * Converts the polygon data into an SVG path string.
@@ -65,10 +64,7 @@ function getPathFromPolygons(polygons) {
  * @param {Object} frame - The frame data containing polygons to update the SVG path.
  */
 function updateFrame(frame) {
-    const transform = svg.querySelector("g").getCTM().inverse();
     svgPath.setAttribute("d", getPathFromPolygons(frame.polygons));
-    svgPath.setAttribute("transform", `translate(${transform.e}, ${transform.f})`);
-    svgPath.setAttribute("stroke-width", ".5");
 }
 
 /**
@@ -98,11 +94,9 @@ function playFrames(data) {
  */
 function initializeAnimation() {
     console.log('%c Bad Apple!! 🍎', 'background: #222; color: white; font-size: 24px; padding: 10px; border-radius: 5px;');
-
     if (!originalSvgData) {
         originalSvgData = svg.cloneNode(true);
     }
-
     runAnimation();
 }
 
@@ -125,6 +119,9 @@ async function loadAnimation() {
 
     async function startAnimation() {
         if (!animationStarted) {
+            const transform = svg.querySelector("g").getCTM().inverse();
+            svgPath.setAttribute("transform", `translate(${transform.e}, ${transform.f})`);
+            svgPath.setAttribute("stroke-width", ".5");
             existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
             animationStarted = true;
             animationIntervalId = setInterval(() => playFrames(data), frameDelay);
@@ -136,27 +133,29 @@ async function loadAnimation() {
 }
 
 /**
- * Loads the audio track for the animation.
- * @returns {Promise} A Promise that resolves to the audio source object.
+ * Loads the audio track.ogg for the animation.
+ * @param {number} gainValue - The gain value for controlling the volume (between 0 and 1).
+ * @returns {Promise<AudioBufferSourceNode>} A Promise that resolves to the audio source object.
  */
-function loadAudio() {
-    return new Promise((resolve, reject) => {
-        fetchAudioData().then(data => {
-            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            const buffer = new Uint8Array(data.hex.match(/.{1,2}/g).map(byte => parseInt(byte, 16)));
-            audioCtx.decodeAudioData(buffer.buffer, function (decodedData) {
-                const source = audioCtx.createBufferSource();
-                source.buffer = decodedData;
+async function loadAudio(gainValue = 0.25) {
+    try {
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        const audioData = await fetchAudioData();
 
-                const gainNode = audioCtx.createGain();
-                gainNode.gain.value = 0.25;
-                source.connect(gainNode);
-                gainNode.connect(audioCtx.destination);
+        const decodedData = await audioCtx.decodeAudioData(audioData);
+        const source = audioCtx.createBufferSource();
+        source.buffer = decodedData;
 
-                resolve(source);
-            }).catch(e => reject(e));
-        }).catch((error) => console.error("Error reading track.json:", error));
-    });
+        const gainNode = audioCtx.createGain();
+        gainNode.gain.value = gainValue;
+        source.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+
+        return source;
+    } catch (error) {
+        console.error("Error loading audio:", error);
+        throw error;
+    }
 }
 
 initializeAnimation();
