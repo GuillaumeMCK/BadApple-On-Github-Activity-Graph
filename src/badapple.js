@@ -79,10 +79,6 @@ function onAnimationFinish() {
     svg.parentNode.replaceChild(originalSvgData.cloneNode(true), svg);
     console.log("Animation finished!");
     animationStarted = false;
-
-    // Remove event listeners
-    document.removeEventListener("keypress", handleKeyPress);
-    document.removeEventListener("click", handleKeyPress);
 }
 
 /**
