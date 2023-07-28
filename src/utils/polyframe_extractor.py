@@ -38,18 +38,24 @@ def process_frame(src: cv2.UMat, count: int, target_width: int, target_height: i
     gradient_y = cv2.Sobel(gray_frame, cv2.CV_64F, 0, 1, ksize=3)
     gradient_magnitude = np.sqrt(gradient_x ** 2 + gradient_y ** 2)
 
-    # Find contours in the gradient magnitude image
+    # Threshold the gradient magnitude image to obtain a binary image containing only the white edges
     _, binary_edges = cv2.threshold(gradient_magnitude, 90, 255, cv2.THRESH_BINARY)
 
-    # Find contours in the binary image
+    # Find contours in the binary edge image
     contours, _ = cv2.findContours(binary_edges.astype(np.uint8), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-    # Store the polygons as tuples
-    polygons = [tuple(approx_poly.squeeze().tolist()) for contour in contours
-                for approx_poly in [cv2.approxPolyDP(contour, .001 * cv2.arcLength(contour, True), True)]]
-    # Filter out polygons with less than 3 points
-    polygons = [polygon for polygon in polygons if len(polygon) > 3]
-    # Create and return the Frame object with polygons and the resized image
+    # Store the polygons as lists of points
+    polygons = []
+    for contour in contours:
+        # Approximate the polygon from the contour
+        epsilon = 0.001 * cv2.arcLength(contour, True)
+        approx_poly = cv2.approxPolyDP(contour, epsilon, True)
+
+        # Filter out polygons with less than 3 points
+        if len(approx_poly) > 3:
+            polygons.append(approx_poly.squeeze().tolist())
+
+    # Create and return the PolygonFrame object with polygons and the resized image
     return PolygonFrame(count, polygons, resized_frame)
 
 
