@@ -1,10 +1,7 @@
-/**
- * Get the SVG element for the activity overview graph and its child elements.
- */
+// Get the SVG element for the activity overview graph and its child elements.
 const svg = document.querySelector(".js-activity-overview-graph");
 const svgPath = svg.querySelector("path");
 const existingEllipses = svg.querySelectorAll("ellipse");
-const frameDelay = 1000 / 30;
 
 // Variables to hold animation data and state
 let originalSvgData;
@@ -16,6 +13,9 @@ let animationStarted = false;
 const develop = false;
 const framesSrc = develop ? "data/frames.json" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json";
 const audioSrc = develop ? "data/track.ogg" : "https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg";
+
+// Animation settings
+const frameDelay = 1000 / 30;
 
 /**
  * Fetches the animation data from the specified data source (local or remote).
@@ -104,44 +104,38 @@ function initializeAnimation() {
  * Runs the animation by initializing it and starting the audio and animation.
  */
 async function runAnimation() {
-    const audio = await loadAudio();
-    const animation = await loadAnimation();
-    audio.start();
-    await animation();
-}
-
-/**
- * Loads the animation data and returns a function to start the animation.
- * @returns {Function} A function to start the animation.
- */
-async function loadAnimation() {
-    const data = await fetchAnimationData()
-
-    async function startAnimation() {
-        if (!animationStarted) {
-            const transform = svg.querySelector("g").getCTM().inverse();
-            svgPath.setAttribute("transform", `translate(${transform.e}, ${transform.f})`);
-            svgPath.setAttribute("stroke-width", ".5");
-            existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
-            animationStarted = true;
-            animationIntervalId = setInterval(() => playFrames(data), frameDelay);
-        }
-
+    if (!animationStarted) {
+        animationStarted = true;
+        const [audioData, animationData] = await Promise.all([
+            fetchAudioData(),
+            fetchAnimationData()
+        ]);
+        clearSvg();
+        const audio = await loadAudio(audioData);
+        audio.start();
+        animationIntervalId = setInterval(() => playFrames(animationData), frameDelay);
     }
-
-    return startAnimation;
 }
 
 /**
- * Loads the audio track.ogg for the animation.
+ * Clear the SVG by removing the ellipses and setting the stroke width to 0.5.
+ */
+function clearSvg() {
+    const transform = svg.querySelector("g").getCTM().inverse();
+    svgPath.setAttribute("transform", `translate(${transform.e + 8}, ${transform.f})`);
+    svgPath.setAttribute("stroke-width", ".5");
+    existingEllipses.forEach(ellipse => (ellipse.style.display = "none"));
+}
+
+/**
+ * Loads the audio data for the animation.
+ * @param {ArrayBuffer} audioData - The audio data to be loaded.
  * @param {number} gainValue - The gain value for controlling the volume (between 0 and 1).
  * @returns {Promise<AudioBufferSourceNode>} A Promise that resolves to the audio source object.
  */
-async function loadAudio(gainValue = 0.25) {
+async function loadAudio(audioData, gainValue = 0.25) {
     try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        const audioData = await fetchAudioData();
-
         const decodedData = await audioCtx.decodeAudioData(audioData);
         const source = audioCtx.createBufferSource();
         source.buffer = decodedData;
