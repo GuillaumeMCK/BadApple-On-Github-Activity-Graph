@@ -6,11 +6,16 @@
 > A single line of code to play the iconic `Bad Apple!! 🍎` animation on your GitHub activity graph!
 
 <div align="center" style="margin: 40px auto">
-    <img src="https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/" width="600" alt="Bad Apple!! on Github Activity Graph"/>
+    <img src="https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/.github/demo.gif" width="600" alt="Bad Apple!! on Github Activity Graph"/>
     <p>Feel free to use, modify, and share this code as you wish! 🚀</p>
 </div>
 
 ## How to run it
+
+### Run it from local
+
+1. Clone this repository. `git clone https://github.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph.git`
+2. Open the `index.html` file stored in the `src` folder.
 
 ### Run it on your profile
 
@@ -18,18 +23,15 @@
    from [here](https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/badapple.min.js).
 
 ```js
-var a=document.querySelector(".js-activity-overview-graph"),b=a.querySelector("path"),c=a.querySelectorAll("ellipse"),d=1000/30,e,f=0,g,h=!1,i=!1,j=i?"data/frames.json":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json",k=i?"data/track.ogg":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg";async function l(){try {if(!l.cachedData){var A=await fetch(j);l.cachedData=await A.json()}return l.cachedData} catch (_) {console.error("Error reading frames.json:",_)}}async function m(){try {if(!m.cachedData){var A=await fetch(k);m.cachedData=await A.arrayBuffer()}return m.cachedData} catch (_) {console.error("Error reading track.ogg:",_)}}function n(A){return A.map(polygon=>`M${polygon.join(" L")} Z`).join(" ")}function o(A){b.setAttribute("d",n(A.polygons))}function p(){clearInterval(g);a.parentNode.replaceChild(e.cloneNode(!0),a);console.log("Animation finished!");h=!1}function q(A){o(A[f]);f=(f+1)%A.length;!f&&p()}function r(){console.log('%c Bad Apple!! 🍎','background: #222; color: white; font-size: 24px; padding: 10px; border-radius: 5px;');!e&&(e=a.cloneNode(!0));s()}async function s(){var A=await u();A.start();await await t()()}async function t(){var A=await l();async function _(){if(!h){var B=a.querySelector("g").getCTM().inverse();b.setAttribute("transform",`translate(${B.e}, ${B.f})`);b.setAttribute("stroke-width",".5");for(const C of c)(C.style.display="none");h=!0;g=setInterval(()=>q(A),d)}}return _}async function u(A=0.25){try {var _=new (window.AudioContext||window.webkitAudioContext)(),B=await m(),C=await _.decodeAudioData(B),D=_.createBufferSource(),E=_.createGain();D.buffer=C;E.gain.value=A;D.connect(E);E.connect(_.destination);return D} catch (_a) {console.error("Error loading audio:",_a);throw _a}}r();
+var a=document.querySelector(".js-activity-overview-graph"),b=a.querySelector("path"),c=a.querySelectorAll("ellipse"),d,e=0,f,g=!1,h=!1,i=h?"data/frames.json":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/frames.json",j=h?"data/track.ogg":"https://raw.githubusercontent.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph/main/src/data/track.ogg",k=1000/30;async function l(){try {if(!l.cachedData){var A=await fetch(i);l.cachedData=await A.json()}return l.cachedData} catch (_) {console.error("Error reading frames.json:",_)}}async function m(){try {if(!m.cachedData){var A=await fetch(j);m.cachedData=await A.arrayBuffer()}return m.cachedData} catch (_) {console.error("Error reading track.ogg:",_)}}function n(A){return A.map(polygon=>`M${polygon.join(" L")} Z`).join(" ")}function o(A){b.setAttribute("d",n(A.polygons))}function p(){clearInterval(f);a.parentNode.replaceChild(d.cloneNode(!0),a);console.log("Animation finished!");g=!1}function q(A){o(A[e]);e=(e+1)%A.length;!e&&p()}function r(){console.log('%c Bad Apple!! 🍎','background: #222; color: white; font-size: 24px; padding: 10px; border-radius: 5px;');!d&&(d=a.cloneNode(!0));s()}async function s(){if(!g){g=!0;var[A,_]=await Promise.all([m(),l()]),B=await u(A);t();B.start();f=setInterval(()=>q(_),k)}}function t(){var A=a.querySelector("g").getCTM().inverse();b.setAttribute("transform",`translate(${A.e+8}, ${A.f})`);b.setAttribute("stroke-width",".5");for(const _ of c)(_.style.display="none")}async function u(A,_=0.25){try {var B=new (window.AudioContext||window.webkitAudioContext)(),C=await B.decodeAudioData(A),_c=B.createBufferSource(),D=B.createGain();_c.buffer=C;D.gain.value=_;_c.connect(D);D.connect(B.destination);return _c} catch (_a) {console.error("Error loading audio:",_a);throw _a}}r();
 ```
 
-`SHA-256: 4c4cab089736071db7ebe78844e787f338634b45ff248276cdf00af2a3e276a5`
+`SHA-256: 64ab9ed59d42d0c0c8c7161ff7511a97f2d5b6b32518e047115f7adfe5f5a2ef`
 
 2. Go to your GitHub profile page and open the developer console (Ctrl+Shift+I or F12).
 3. Paste the code into the console and press Enter.
+4. Enjoy the show! 🍿
 
-### Run it from local
-
-1. Clone this repository. `git clone https://github.com/GuillaumeMCK/BadApple-On-Github-Activity-Graph.git`
-2. Open the `index.html` file stored in the `src` folder.
 
 ## How it Works
 
