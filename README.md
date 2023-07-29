@@ -1,7 +1,5 @@
 # BadApple-On-Github-Activity-Graph
 
-![Unicorn Approved](https://img.shields.io/badge/Unicorn-Approved-ff69b4.svg)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
 > A single line of code to play the iconic `Bad Apple!! 🍎` animation on your GitHub activity graph!
 
